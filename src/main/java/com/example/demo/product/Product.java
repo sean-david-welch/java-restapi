@@ -74,9 +74,4 @@ public class Product {
     public void setPrice(Float price) {
         this.price = price;
     }
-
-    // @PrePersist
-    // public void generateUUID() {
-    //     this.id = UUID.randomUUID().toString();
-    // }
 }
