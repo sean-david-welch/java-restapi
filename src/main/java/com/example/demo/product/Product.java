@@ -4,8 +4,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
 import jakarta.persistence.Column;
-// import javax.persistence.PrePersist;
-// import java.util.UUID;
 
 @Entity
 @Table(name = "product")
