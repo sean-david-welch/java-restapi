@@ -31,7 +31,6 @@ public class ProductController {
         productService.PutProduct(productId, product);
     }
     
-
     @PostMapping
     public void registerProduct(@RequestBody Product product) {
         productService.CreateProduct(product);

@@ -20,18 +20,17 @@ public class AboutController {
     public AboutController(AboutService aboutService) {
         this.aboutService = aboutService;
     }
-
+    
     @GetMapping
 	public List<About> GetAbout() {
         return aboutService.GetAbout();
 	}
 
     @PutMapping(path = "{aboutId}")
-    public void updateabout(@PathVariable("aboutId") String aboutId, @RequestBody About about) {
+    public void updateAbout(@PathVariable("aboutId") String aboutId, @RequestBody About about) {
         aboutService.PutAbout(aboutId, about);
     }
     
-
     @PostMapping
     public void registerAbout(@RequestBody About about) {
         aboutService.CreateAbout(about);
