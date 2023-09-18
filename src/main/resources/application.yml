@@ -1,0 +1,19 @@
+server:
+  port: 8000
+
+spring:
+  datasource:
+    url: jdbc:postgresql://containers-us-west-207.railway.app:5480/railway
+    username: postgres
+    password: l4fQLhVy8ZUOwmpLV3BH
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+springdoc:
+  swagger-ui:
+    path: /
