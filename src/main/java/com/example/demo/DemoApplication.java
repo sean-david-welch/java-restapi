@@ -10,7 +10,6 @@ public class DemoApplication {
 
 	public static void main(String[] args) {
 		Dotenv.load();
-
 		SpringApplication.run(DemoApplication.class, args);
 	}
 

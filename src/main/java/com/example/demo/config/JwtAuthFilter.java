@@ -2,7 +2,6 @@ package com.example.demo.config;
 
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,15 +18,15 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    @Autowired
     private JwtService jwtService;
+    private final UserDetailsService userDetailsService;
+    
 
     public JwtAuthFilter(JwtService jwtService, UserDetailsService userDetailsService) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
     }
 
-    private final UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(
@@ -35,19 +34,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         HttpServletResponse response,
         FilterChain filterChain
     ) throws ServletException, IOException {
-
         final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String userEmail;
 
         if (authHeader == null || !authHeader.startsWith("Bearer")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        jwt = authHeader.substring(7);
-
-        userEmail = jwtService.extractUsername(jwt);
+        final String jwt = authHeader.substring(7);
+        final String userEmail = jwtService.extractUsername(jwt);
            
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);

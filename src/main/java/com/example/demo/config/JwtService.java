@@ -7,10 +7,10 @@ import java.util.function.Function;
 
 import javax.crypto.SecretKey;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -20,9 +20,11 @@ import io.jsonwebtoken.security.Keys;
 @Service
 public class JwtService {
 
-    private static final Dotenv dotenv = Dotenv.load();
+    private final String SECRET_KEY;
 
-    private static final String SECRET_KEY = dotenv.get("SECRET_KEY");
+    public JwtService(@Qualifier("secretKey") String secretKey) {
+        this.SECRET_KEY = secretKey;
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);

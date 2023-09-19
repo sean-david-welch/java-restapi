@@ -36,20 +36,20 @@ public class User implements UserDetails{
     @Column(name = "password")
     private String password;
 
-    @Column(name = "is_active")
-    private boolean is_active;
+    @Column(name = "isActive")
+    private boolean isActive;
 
-    @Column(name = "is_superuser")
-    private boolean is_superuser;
+    @Column(name = "isSuperuser")
+    private boolean isSuperuser;
 
     public User() {}
 
-    public User(String id, String name, String email, String password, boolean is_active, boolean is_superuser) {
+    public User(String id, String name, String email, String password, boolean isActive, boolean isSuperuser) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.is_active = is_active;
-        this.is_superuser = is_superuser;
+        this.isActive = isActive;
+        this.isSuperuser = isSuperuser;
     }
 
     public String getId() {
@@ -84,20 +84,20 @@ public class User implements UserDetails{
         this.password = password;
     }
 
-    public boolean getIs_active() {
-        return is_active;
+    public boolean getIsActive() {
+        return isActive;
     }
 
-    public void setIs_active(boolean is_active) {
-        this.is_active = is_active;
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
     }
 
-    public boolean getIs_superuser() {
-        return is_superuser;
+    public boolean getIsSuperuser() {
+        return isSuperuser;
     }
 
-    public void setIs_superuser(boolean is_superuser) {
-        this.is_superuser = is_superuser;
+    public void setIsSuperuser(boolean isSuperuser) {
+        this.isSuperuser = isSuperuser;
     }
 
     @Enumerated(EnumType.STRING)
@@ -110,7 +110,7 @@ public class User implements UserDetails{
 
     @Override
     public String getPassword() {
-        return this.getPassword();
+        return this.password;
     }
 
     @Override
@@ -135,6 +135,6 @@ public class User implements UserDetails{
 
     @Override
     public boolean isEnabled() {
-        return this.getIs_active();
+        return this.getIsActive();
     }
 }
