@@ -4,8 +4,8 @@ server:
 spring:
   datasource:
     url: jdbc:postgresql://containers-us-west-207.railway.app:5480/railway
-    username: postgres
-    password: l4fQLhVy8ZUOwmpLV3BH
+    username: ${PG_USER}
+    password: ${PG_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: none
