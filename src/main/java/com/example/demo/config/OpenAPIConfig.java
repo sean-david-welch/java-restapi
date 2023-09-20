@@ -12,6 +12,6 @@ public class OpenAPIConfig {
     @Bean
     OpenAPI customOpenAPI() {
         return new OpenAPI()
-            .info(new Info().title("My API").version("1.0"));
-    }   
+                .info(new Info().title("Primal Formulas Java API").version("1.0"));
+    }
 }
