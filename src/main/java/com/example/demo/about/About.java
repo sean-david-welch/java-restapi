@@ -6,7 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Column;
 
 @Entity
-@Table(name = "aboutcontent")
+@Table(name = "About")
 public class About {
     @Id
     @Column(name = "id")
@@ -21,7 +21,8 @@ public class About {
     @Column(name = "image")
     private String image;
 
-    public About() {}
+    public About() {
+    }
 
     public About(String id, String title, String description, String image) {
         this.id = id;

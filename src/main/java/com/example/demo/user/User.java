@@ -17,18 +17,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 
-
 @Entity
 @Table(name = "user")
-public class User implements UserDetails{
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
     private String id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "username")
+    private String username;
 
     @Column(name = "email")
     private String email;
@@ -36,20 +35,23 @@ public class User implements UserDetails{
     @Column(name = "password")
     private String password;
 
-    @Column(name = "isActive")
-    private boolean isActive;
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
-    @Column(name = "isSuperuser")
-    private boolean isSuperuser;
+    public User() {
+    }
 
-    public User() {}
+    public enum Role {
+        USER,
+        SUPERUSER
+    }
 
-    public User(String id, String name, String email, String password, boolean isActive, boolean isSuperuser) {
+    public User(String id, String username, String email, String password, Role role) {
         this.id = id;
-        this.name = name;
+        this.username = username;
         this.email = email;
-        this.isActive = isActive;
-        this.isSuperuser = isSuperuser;
+        this.role = role;
     }
 
     public String getId() {
@@ -60,12 +62,12 @@ public class User implements UserDetails{
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getUsernameDB() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {
@@ -84,25 +86,6 @@ public class User implements UserDetails{
         this.password = password;
     }
 
-    public boolean getIsActive() {
-        return isActive;
-    }
-
-    public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
-    }
-
-    public boolean getIsSuperuser() {
-        return isSuperuser;
-    }
-
-    public void setIsSuperuser(boolean isSuperuser) {
-        this.isSuperuser = isSuperuser;
-    }
-
-    @Enumerated(EnumType.STRING)
-    private Role role;
-    
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
@@ -115,26 +98,26 @@ public class User implements UserDetails{
 
     @Override
     public String getUsername() {
-        return this.getEmail();
+        return this.getUsernameDB();
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; 
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; 
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; 
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return this.getIsActive();
+        return true;
     }
 }

@@ -6,7 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Column;
 
 @Entity
-@Table(name = "product")
+@Table(name = "Product")
 public class Product {
 
     @Id
@@ -25,7 +25,8 @@ public class Product {
     @Column(name = "price")
     private Float price;
 
-    public Product() {}
+    public Product() {
+    }
 
     public Product(String id, String name, String description, String image, Float price) {
         this.id = id;
