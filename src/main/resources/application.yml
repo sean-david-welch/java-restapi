@@ -4,16 +4,15 @@ server:
 spring:
   datasource:
     url: jdbc:postgresql://containers-us-west-207.railway.app:5480/railway
-    username: ${PG_USER}
-    password: ${PG_PASSWORD}
+    username: postgres
+    password: l4fQLhVy8ZUOwmpLV3BH
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        # format_sql: true
 
 springdoc:
   swagger-ui:
