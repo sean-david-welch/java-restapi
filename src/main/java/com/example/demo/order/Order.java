@@ -11,10 +11,10 @@ import jakarta.persistence.Column;
 
 import java.time.LocalDateTime;
 
-import com.example.demo.product.Product;
+import com.example.demo.customer.Customer;
 
 @Entity
-@Table(name = "order")
+@Table(name = "\"order\"")
 public class Order {
 
     @Id
@@ -25,8 +25,8 @@ public class Order {
     private LocalDateTime orderDate;
 
     @ManyToOne
-    @JoinColumn(name = "product_id", referencedColumnName = "id")
-    private Product product;
+    @JoinColumn(name = "customer_id", referencedColumnName = "id")
+    private Customer customer;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
@@ -41,10 +41,10 @@ public class Order {
     public Order() {
     }
 
-    public Order(String id, LocalDateTime orderDate, Product product, Status status) {
+    public Order(String id, LocalDateTime orderDate, Customer customer, Status status) {
         this.id = id;
         this.orderDate = orderDate;
-        this.product = product;
+        this.customer = customer;
         this.status = status;
     }
 
@@ -64,12 +64,12 @@ public class Order {
         this.orderDate = orderDate;
     }
 
-    public Product getProduct() {
-        return product;
+    public Customer getCustomer() {
+        return customer;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     public Status getStatus() {
