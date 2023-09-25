@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 
 import java.util.Collection;
 import java.util.List;
@@ -14,6 +15,8 @@ import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.example.demo.customer.Customer;
 
 import jakarta.persistence.Column;
 
@@ -25,6 +28,9 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
     private String id;
+
+    @OneToOne(mappedBy = "user")
+    private Customer customer;
 
     @Column(name = "username")
     private String username;
