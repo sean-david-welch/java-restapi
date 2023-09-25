@@ -26,9 +26,14 @@ public class OrderDetailsController {
         return orderDetailsService.GetOrderDetails();
     }
 
-    @GetMapping(path = "{orderDetailId}")
+    @GetMapping(path = "/{orderDetailId}")
     public Optional<OrderDetails> getOrderDetailsById(@PathVariable("orderDetailId") String orderDetailId) {
         return orderDetailsService.GetOrderDetailById(orderDetailId);
+    }
+
+    @GetMapping(path = "/{orderId}")
+    public List<OrderDetails> getOrderDetailsByOrderId(@PathVariable("orderId") String orderId) {
+        return orderDetailsService.GetOrderDetailsByOrderId(orderId);
     }
 
 }

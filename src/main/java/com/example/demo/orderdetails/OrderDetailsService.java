@@ -29,6 +29,16 @@ public class OrderDetailsService {
         return orderDetailsRepository.findOrderDetailsById(orderDetailId);
     }
 
+    public List<OrderDetails> GetOrderDetailsByOrderId(OrderDetails orderDetails) {
+        Optional<Order> orderId = orderRepository.findOrderById(orderDetails.getOrder_id().getId());
+
+        if (orderId.isPresent()) {
+            return orderDetailsRepository.findByOrderId(orderId.get());
+        } else {
+            return List.of();
+        }
+    }
+
     public void CreateOrderDetails(OrderDetails orderDetails) {
         Optional<OrderDetails> orderDetailsOptional = orderDetailsRepository.findOrderDetailsById(orderDetails.getId());
         Optional<Order> orderOptional = orderRepository.findById(orderDetails.getOrder_id().getId());
