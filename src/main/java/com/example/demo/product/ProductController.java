@@ -1,6 +1,7 @@
 package com.example.demo.product;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,15 +23,20 @@ public class ProductController {
     }
 
     @GetMapping
-	public List<Product> GetProducts() {
+    public List<Product> GetProducts() {
         return productService.GetProducts();
-	}
+    }
+
+    @GetMapping(path = "{productId}")
+    public Optional<Product> getProductById(@PathVariable("productId") String productId) {
+        return productService.GetProductById(productId);
+    }
 
     @PutMapping(path = "{productId}")
     public void updateProduct(@PathVariable("productId") String productId, @RequestBody Product product) {
         productService.PutProduct(productId, product);
     }
-    
+
     @PostMapping
     public void registerProduct(@RequestBody Product product) {
         productService.CreateProduct(product);

@@ -25,6 +25,10 @@ public class OrderDetailsService {
         return orderDetailsRepository.findAll();
     }
 
+    public Optional<OrderDetails> GetOrderDetailById(String orderDetailId) {
+        return orderDetailsRepository.findOrderDetailsById(orderDetailId);
+    }
+
     public void CreateOrderDetails(OrderDetails orderDetails) {
         Optional<OrderDetails> orderDetailsOptional = orderDetailsRepository.findOrderDetailsById(orderDetails.getId());
         Optional<Order> orderOptional = orderRepository.findById(orderDetails.getOrder_id().getId());

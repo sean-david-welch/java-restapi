@@ -7,7 +7,6 @@ import java.util.UUID;
 import java.util.List;
 import java.util.Optional;
 
-
 @Service
 public class ProductService {
 
@@ -17,12 +16,15 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-	public List<Product> GetProducts() {
+    public List<Product> GetProducts() {
         return productRepository.findAll();
     }
 
+    public Optional<Product> GetProductById(String productId) {
+        return productRepository.findProductById(productId);
+    }
 
-    public void CreateProduct(Product product) { 
+    public void CreateProduct(Product product) {
         Optional<Product> productOptional = productRepository.findProductById(product.getId());
 
         if (productOptional.isPresent()) {
@@ -57,7 +59,7 @@ public class ProductService {
         existingProduct.setDescription(product.getDescription());
         existingProduct.setImage(product.getImage());
         existingProduct.setPrice(product.getPrice());
-    
+
         productRepository.save(existingProduct);
 
     }
