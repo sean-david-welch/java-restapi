@@ -3,16 +3,23 @@ package com.example.demo.customer;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.user.User;
+import com.example.demo.user.UserRepository;
+
 import java.util.UUID;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class CustomerService {
-    private final CustomerRepository customerRepository;
 
-    public CustomerService(CustomerRepository customerRepository) {
+    private final CustomerRepository customerRepository;
+    private final UserRepository userRepository;
+
+    public CustomerService(CustomerRepository customerRepository, UserRepository userRepository) {
         this.customerRepository = customerRepository;
+        this.userRepository = userRepository;
+
     }
 
     public List<Customer> GetCustomers() {
@@ -24,6 +31,11 @@ public class CustomerService {
 
         if (customerOptional.isPresent()) {
             throw new IllegalStateException("Csutomer already exits");
+        }
+
+        Optional<User> userOptional = userRepository.findById(customer.getUser().getId());
+        if (!userOptional.isPresent()) {
+            throw new IllegalStateException("Associated user not found");
         }
 
         customer.setId(UUID.randomUUID().toString());
