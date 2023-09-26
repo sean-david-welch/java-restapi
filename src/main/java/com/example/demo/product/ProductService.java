@@ -20,10 +20,11 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public Optional<Product> GetProductById(String productId) {
+    public Optional<Product> GetProductDetail(String productId) {
         return productRepository.findProductById(productId);
     }
 
+    @Transactional
     public void CreateProduct(Product product) {
         Optional<Product> productOptional = productRepository.findProductById(product.getId());
 
@@ -36,17 +37,8 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    public void RemoveProduct(String productId) {
-        boolean exists = productRepository.existsById(productId);
-
-        if (!exists) {
-            throw new IllegalStateException("Product does not exist" + productId);
-        }
-        productRepository.deleteById(productId);
-    }
-
     @Transactional
-    public void PutProduct(String productId, Product product) {
+    public void UpdateProduct(String productId, Product product) {
         Optional<Product> productOptional = productRepository.findById(productId);
 
         if (!productOptional.isPresent()) {
@@ -61,6 +53,14 @@ public class ProductService {
         existingProduct.setPrice(product.getPrice());
 
         productRepository.save(existingProduct);
+    }
 
+    public void RemoveProduct(String productId) {
+        boolean exists = productRepository.existsById(productId);
+
+        if (!exists) {
+            throw new IllegalStateException("Product does not exist" + productId);
+        }
+        productRepository.deleteById(productId);
     }
 }

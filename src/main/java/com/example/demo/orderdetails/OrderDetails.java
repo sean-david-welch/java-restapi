@@ -25,7 +25,7 @@ public class OrderDetails {
 
     @ManyToOne
     @JoinColumn(name = "order_id", referencedColumnName = "id")
-    private Order order_id;
+    private Order order;
 
     @Column(name = "quantity")
     private Integer quantity;
@@ -36,10 +36,10 @@ public class OrderDetails {
     public OrderDetails() {
     }
 
-    public OrderDetails(String id, Product product, Order order_id, Integer quantity, Float unitPrice) {
+    public OrderDetails(String id, Product product, Order order, Integer quantity, Float unitPrice) {
         this.id = id;
         this.product = product;
-        this.order_id = order_id;
+        this.order = order;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
     }
@@ -52,11 +52,11 @@ public class OrderDetails {
         this.id = id;
     }
 
-    public String getProduct_id() {
+    public String getProductID() {
         return this.product != null ? this.product.getId() : null;
     }
 
-    public void setProduct_id(Product product) {
+    public void setProductID(Product product) {
         this.product = product;
     }
 
@@ -64,12 +64,12 @@ public class OrderDetails {
         return this.product != null ? this.product.getName() : null;
     }
 
-    public Order getOrder_id() {
-        return order_id;
+    public Order getOrderID() {
+        return order;
     }
 
-    public void setOrder_id(Order order_id) {
-        this.order_id = order_id;
+    public void setOrderID(Order order) {
+        this.order = order;
     }
 
     public Integer getQuantity() {

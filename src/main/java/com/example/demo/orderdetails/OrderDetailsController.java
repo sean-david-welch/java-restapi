@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.web.bind.annotation.GetMapping;
-// import org.springframework.web.bind.annotation.DeleteMapping;
-// import org.springframework.web.bind.annotation.PostMapping;
-// import org.springframework.web.bind.annotation.PutMapping;
-// import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,18 +22,28 @@ public class OrderDetailsController {
     }
 
     @GetMapping
-    public List<OrderDetails> GetOrderDetails() {
+    public List<OrderDetails> FetchOrderDetails() {
         return orderDetailsService.GetOrderDetails();
     }
 
     @GetMapping(path = "/{orderDetailId}")
-    public Optional<OrderDetails> getOrderDetailsById(@PathVariable("orderDetailId") String orderDetailId) {
+    public Optional<OrderDetails> FetchOrderDetailsById(@PathVariable("orderDetailId") String orderDetailId) {
         return orderDetailsService.GetOrderDetailById(orderDetailId);
     }
 
-    @GetMapping(path = "/{orderId}")
-    public List<OrderDetails> getOrderDetailsByOrderId(@PathVariable("orderId") String orderId) {
-        return orderDetailsService.GetOrderDetailsByOrderId(orderId);
+    @PostMapping
+    public void PostOrderDetails(@RequestBody OrderDetails orderDetails) {
+        orderDetailsService.CreateOrderDetails(orderDetails);
     }
 
+    @PutMapping(path = "{orderDetailId}")
+    public void PutOrderDetails(@PathVariable("orderDetailId") String orderDetailsId,
+            @RequestBody OrderDetails orderDetails) {
+        orderDetailsService.UpdateOrderDetails(orderDetails, orderDetailsId);
+    }
+
+    @DeleteMapping(path = "{orderDetailId}")
+    public void DeleteOrderDetails(@PathVariable("orderDetailId") String orderDetailsId) {
+        orderDetailsService.RemoveOrderDetails(orderDetailsId);
+    }
 }

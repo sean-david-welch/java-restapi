@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import com.example.demo.customer.Customer;
 import com.example.demo.customer.CustomerRepository;
 
+import jakarta.transaction.Transactional;
+
 import java.util.UUID;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +26,11 @@ public class OrderService {
         return orderRepository.findAll();
     }
 
+    public Optional<Order> GetOrderDetail(String orderId) {
+        return orderRepository.findOrderById(orderId);
+    }
+
+    @Transactional
     public void CreateOrder(Order order) {
         Optional<Order> orderOptional = orderRepository.findOrderById(order.getId());
         Optional<Customer> customerOptional = customerRepository.findById(order.getCustomer().getId());
@@ -35,6 +42,34 @@ public class OrderService {
         order.setId(UUID.randomUUID().toString());
 
         orderRepository.save(order);
+    }
+
+    @Transactional
+    public void UpdateOrder(Order order, String orderId) {
+        Optional<Order> orderOptional = orderRepository.findOrderById(order.getId());
+        Optional<Customer> customerOptional = customerRepository.findById(order.getCustomer().getId());
+
+        if (orderOptional.isPresent() || !customerOptional.isPresent()) {
+            throw new IllegalStateException("This order already exists or the customer does not exist");
+        }
+
+        Order existingOrder = orderOptional.get();
+
+        existingOrder.setOrderDate(order.getOrderDate());
+        existingOrder.setCustomer(order.getCustomer());
+        existingOrder.setStatus(order.getStatus());
+
+        orderRepository.save(existingOrder);
+    }
+
+    public void RemoveOrder(String orderId) {
+        boolean exists = orderRepository.existsById(orderId);
+
+        if (!exists) {
+            throw new IllegalStateException("Order does not exist" + orderId);
+        }
+
+        orderRepository.deleteById(orderId);
     }
 
 }

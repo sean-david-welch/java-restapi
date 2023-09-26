@@ -23,27 +23,27 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<Product> GetProducts() {
+    public List<Product> FetchProducts() {
         return productService.GetProducts();
     }
 
     @GetMapping(path = "{productId}")
-    public Optional<Product> getProductById(@PathVariable("productId") String productId) {
-        return productService.GetProductById(productId);
+    public Optional<Product> FetchProductById(@PathVariable("productId") String productId) {
+        return productService.GetProductDetail(productId);
     }
 
     @PutMapping(path = "{productId}")
-    public void updateProduct(@PathVariable("productId") String productId, @RequestBody Product product) {
-        productService.PutProduct(productId, product);
+    public void PutProduct(@PathVariable("productId") String productId, @RequestBody Product product) {
+        productService.UpdateProduct(productId, product);
     }
 
     @PostMapping
-    public void registerProduct(@RequestBody Product product) {
+    public void PostProduct(@RequestBody Product product) {
         productService.CreateProduct(product);
     }
 
     @DeleteMapping(path = "{productId}")
-    public void deleteProduct(@PathVariable("productId") String productId) {
+    public void DeleteProduct(@PathVariable("productId") String productId) {
         productService.RemoveProduct(productId);
     }
 }
