@@ -17,6 +17,12 @@ import com.example.demo.customer.Customer;
 @Table(name = "orders")
 public class Order {
 
+    public enum Status {
+        received,
+        in_progress,
+        complete
+    }
+
     @Id
     @Column(name = "id")
     private String id;
@@ -28,15 +34,9 @@ public class Order {
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private Customer customer;
 
-    @Column(name = "status")
+    @Column(name = "status", columnDefinition = "order_status")
     @Enumerated(EnumType.STRING)
     private Status status;
-
-    public enum Status {
-        received,
-        in_progress,
-        completed
-    }
 
     public Order() {
     }

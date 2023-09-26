@@ -12,6 +12,8 @@ import java.util.UUID;
 import java.util.List;
 import java.util.Optional;
 
+import java.time.LocalDateTime;
+
 @Service
 public class OrderService {
     private final OrderRepository orderRepository;
@@ -42,7 +44,7 @@ public class OrderService {
         // Create new Order
         Order order = new Order(
                 UUID.randomUUID().toString(),
-                orderDTO.getOrderDate(),
+                LocalDateTime.now(),
                 customer,
                 orderDTO.getStatus());
 
