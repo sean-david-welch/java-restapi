@@ -26,19 +26,36 @@ public class CustomerService {
         return customerRepository.findAll();
     }
 
+    public Optional<Customer> GetCustomerDetail(String customerId) {
+        return customerRepository.findCustomerById(customerId);
+    }
+
+    @Transactional
     public void CreateCustomer(Customer customer) {
         Optional<Customer> customerOptional = customerRepository.findCustomerById(customer.getId());
-
-        if (customerOptional.isPresent()) {
-            throw new IllegalStateException("Csutomer already exits");
-        }
-
         Optional<User> userOptional = userRepository.findById(customer.getUser().getId());
-        if (!userOptional.isPresent()) {
-            throw new IllegalStateException("Associated user not found");
+
+        if (customerOptional.isPresent() || !userOptional.isPresent()) {
+            throw new IllegalStateException("Csutomer already exits or user does not exist");
         }
 
         customer.setId(UUID.randomUUID().toString());
+
+        customerRepository.save(customer);
+    }
+
+    @Transactional
+    public void UpdateCustomer(String customerId, Customer customer) {
+        Optional<Customer> customerOptional = customerRepository.findCustomerById(customer.getId());
+        Optional<User> userOptional = userRepository.findById(customer.getUser().getId());
+
+        if (customerOptional.isPresent() || !userOptional.isPresent()) {
+            throw new IllegalStateException("Csutomer already exits or user does not exist");
+        }
+
+        Customer existingCustomer = customerOptional.get();
+
+        existingCustomer.setName(customer.getName());
 
         customerRepository.save(customer);
     }
@@ -51,18 +68,5 @@ public class CustomerService {
         }
 
         customerRepository.deleteById(customerId);
-    }
-
-    @Transactional
-    public void UpdateCustomer(String customerId, Customer customer) {
-        Optional<Customer> customerOptional = customerRepository.findCustomerById(customer.getId());
-
-        if (customerOptional.isPresent()) {
-            throw new IllegalStateException("Csutomer already exits");
-        }
-
-        Customer existingCustomer = customerOptional.get();
-
-        existingCustomer.setName(customer.getName());
     }
 }
