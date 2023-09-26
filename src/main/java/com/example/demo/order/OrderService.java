@@ -31,16 +31,22 @@ public class OrderService {
     }
 
     @Transactional
-    public void CreateOrder(Order order) {
-        Optional<Order> orderOptional = orderRepository.findOrderById(order.getId());
-        Optional<Customer> customerOptional = customerRepository.findById(order.getCustomer().getId());
-
-        if (orderOptional.isPresent() || !customerOptional.isPresent()) {
-            throw new IllegalStateException("This order already exists or the customer does not exist");
+    public void CreateOrder(OrderDTO orderDTO) {
+        // Check if customer exists
+        Optional<Customer> customerOptional = customerRepository.findById(orderDTO.getCustomerId());
+        if (!customerOptional.isPresent()) {
+            throw new IllegalStateException("The customer does not exist");
         }
+        Customer customer = customerOptional.get();
 
-        order.setId(UUID.randomUUID().toString());
+        // Create new Order
+        Order order = new Order(
+                UUID.randomUUID().toString(),
+                orderDTO.getOrderDate(),
+                customer,
+                orderDTO.getStatus());
 
+        // Save the new Order
         orderRepository.save(order);
     }
 

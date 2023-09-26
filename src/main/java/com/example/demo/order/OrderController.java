@@ -33,7 +33,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public void PostOrder(@RequestBody Order order) {
+    public void PostOrder(@RequestBody OrderDTO order) {
         orderService.CreateOrder(order);
     }
 

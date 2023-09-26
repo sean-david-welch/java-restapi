@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import com.example.demo.customer.Customer;
 
 @Entity
-@Table(name = "\"order\"")
+@Table(name = "orders")
 public class Order {
 
     @Id
