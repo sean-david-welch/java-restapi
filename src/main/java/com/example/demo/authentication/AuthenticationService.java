@@ -3,7 +3,10 @@ package com.example.demo.authentication;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,6 +34,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
     public AuthenticationService(
             UserRepository userRepository, RoleRepository roleRepository,
@@ -41,6 +45,28 @@ public class AuthenticationService {
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
+    }
+
+    public LoginResponseDTO loginUser(String username, String password) {
+
+        try {
+            logger.info("Attempting to authenticate user: {}", username);
+
+            Authentication auth = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password));
+
+            String token = tokenService.generateJwt(auth);
+
+            logger.info("User authenticated successfully. Generated token.");
+
+            return new LoginResponseDTO(userRepository.findByUsername(username).orElseThrow(
+                    () -> new UsernameNotFoundException("User not found")), token);
+        } catch (AuthenticationException error) {
+            logger.error("Authentication failed for user: {}", username);
+
+            throw new BadCredentialsException("Invalid username/password supplied");
+
+        }
     }
 
     public User registerUser(String username, String email, String password) {
@@ -63,20 +89,50 @@ public class AuthenticationService {
         return userRepository.save(newUser);
     }
 
-    public LoginResponseDTO loginUser(String username, String password) {
+    public User updateUser(String userId, String newUsername, String newEmail, String newPassword) {
+        Optional<User> userOptional = userRepository.findById(userId);
 
-        try {
-            Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password));
-
-            String token = tokenService.generateJwt(auth);
-
-            return new LoginResponseDTO(userRepository.findByUsername(username).orElseThrow(
-                    () -> new UsernameNotFoundException("User not found")), token);
-        } catch (AuthenticationException error) {
-            throw new BadCredentialsException("Invalid username/password supplied");
-
+        if (userOptional.isEmpty()) {
+            throw new IllegalStateException("User not found");
         }
+
+        User existingUser = userOptional.get();
+
+        if (newUsername != null) {
+            Optional<User> byUsername = userRepository.findByUsername(newUsername);
+            if (byUsername.isPresent() && !byUsername.get().getId().equals(userId)) {
+                throw new IllegalStateException("Username already taken");
+            }
+            existingUser.setUsername(newUsername);
+        }
+
+        if (newEmail != null) {
+            existingUser.setEmail(newEmail);
+        }
+
+        if (newPassword != null) {
+            existingUser.setPassword(passwordEncoder.encode(newPassword));
+        }
+
+        return userRepository.save(existingUser);
+    }
+
+    public User updateUserRoles(String userId, Set<String> newRoles) {
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if (userOptional.isEmpty()) {
+            throw new IllegalStateException("User not found");
+        }
+
+        User existingUser = userOptional.get();
+        Set<Role> roles = newRoles.stream()
+                .map(roleName -> roleRepository.findByAuthority(roleName)
+                        .orElseThrow(() -> new IllegalStateException("Role not found: " + roleName)))
+                .collect(Collectors.toSet());
+
+        existingUser.setAuthorities(roles);
+
+        return userRepository.save(existingUser);
     }
 
 }
