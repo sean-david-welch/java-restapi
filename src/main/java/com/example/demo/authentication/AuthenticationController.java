@@ -13,6 +13,7 @@ import com.example.demo.data.LoginRequestDTO;
 import com.example.demo.data.UserDTO;
 import com.example.demo.user.User;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.Set;
 
@@ -32,8 +33,9 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public LoginResponseDTO loginUser(@RequestBody LoginRequestDTO body) {
-        return authenticationService.loginUser(body.getUsername(), body.getPassword());
+    public LoginResponseDTO loginUser(@RequestBody LoginRequestDTO body, HttpServletResponse response) {
+        return authenticationService.loginUser(body.getUsername(), body.getPassword(), response);
+
     }
 
     @PutMapping("/update-user/{userId}")

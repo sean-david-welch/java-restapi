@@ -5,8 +5,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +21,8 @@ import com.example.demo.data.LoginResponseDTO;
 import com.example.demo.role.Role;
 import com.example.demo.user.User;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -34,7 +34,6 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
 
     public AuthenticationService(
             UserRepository userRepository, RoleRepository roleRepository,
@@ -47,22 +46,24 @@ public class AuthenticationService {
         this.tokenService = tokenService;
     }
 
-    public LoginResponseDTO loginUser(String username, String password) {
+    public LoginResponseDTO loginUser(String username, String password, HttpServletResponse response) {
 
         try {
-            logger.info("Attempting to authenticate user: {}", username);
 
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password));
 
             String token = tokenService.generateJwt(auth);
 
-            logger.info("User authenticated successfully. Generated token.");
+            Cookie jwtCookie = new Cookie("jwt", token);
+            jwtCookie.setHttpOnly(true);
+            jwtCookie.setSecure(false);
+            jwtCookie.setPath("/");
+            response.addCookie(jwtCookie);
 
             return new LoginResponseDTO(userRepository.findByUsername(username).orElseThrow(
                     () -> new UsernameNotFoundException("User not found")), token);
         } catch (AuthenticationException error) {
-            logger.error("Authentication failed for user: {}", username);
 
             throw new BadCredentialsException("Invalid username/password supplied");
 

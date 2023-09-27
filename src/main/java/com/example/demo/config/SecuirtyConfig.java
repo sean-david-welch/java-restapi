@@ -62,6 +62,7 @@ public class SecuirtyConfig {
                                 .requestMatchers("/", "/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                                .requestMatchers(HttpMethod.PUT, "/api/auth/update-user-roles/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.PUT, "/**").hasRole("ADMIN")
