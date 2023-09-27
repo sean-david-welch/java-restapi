@@ -51,6 +51,7 @@ public class SecuirtyConfig {
         DaoAuthenticationProvider daoProvider = new DaoAuthenticationProvider();
 
         daoProvider.setUserDetailsService(userDetailsService);
+        daoProvider.setPasswordEncoder(passwordEncoder());
 
         return new ProviderManager(daoProvider);
     }
@@ -60,7 +61,10 @@ public class SecuirtyConfig {
         http.csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests(
                         (authorizeHttpRequests) -> authorizeHttpRequests
-                                .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                                .requestMatchers("/", "/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.PUT, "/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")
@@ -85,6 +89,7 @@ public class SecuirtyConfig {
         return NimbusJwtDecoder.withPublicKey(keys.getPublicKey()).build();
     }
 
+    @Bean
     public JwtEncoder jwtEncoder() {
         JWK jwk = new RSAKey.Builder(keys.getPublicKey()).privateKey(keys.getPrivateKey()).build();
 

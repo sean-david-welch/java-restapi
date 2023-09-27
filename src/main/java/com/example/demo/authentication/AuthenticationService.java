@@ -5,9 +5,11 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -65,15 +67,16 @@ public class AuthenticationService {
 
         try {
             Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, password, null));
+                    new UsernamePasswordAuthenticationToken(username, password));
 
             String token = tokenService.generateJwt(auth);
 
-            return new LoginResponseDTO(userRepository.findByUsername(username).get(), token);
+            return new LoginResponseDTO(userRepository.findByUsername(username).orElseThrow(
+                    () -> new UsernameNotFoundException("User not found")), token);
         } catch (AuthenticationException error) {
-            return new LoginResponseDTO(null, "");
-        }
+            throw new BadCredentialsException("Invalid username/password supplied");
 
+        }
     }
 
 }
