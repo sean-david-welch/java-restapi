@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.data.LoginResponseDTO;
+import com.example.demo.data.RegistrationDTO;
 import com.example.demo.data.UserDTO;
 import com.example.demo.user.User;
 
@@ -21,9 +23,14 @@ public class AuthenticationController {
         this.authenticationService = authenticationService;
     }
 
-    @PostMapping
+    @PostMapping("/register")
     public User RegisterUser(@RequestBody UserDTO userDTO) {
         return authenticationService.registerUser(userDTO.username(), userDTO.email(), userDTO.password());
+    }
+
+    @PostMapping("/login")
+    public LoginResponseDTO loginUser(@RequestBody RegistrationDTO body) {
+        return authenticationService.loginUser(body.username(), body.password());
     }
 
 }
