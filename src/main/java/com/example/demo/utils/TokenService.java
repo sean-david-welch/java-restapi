@@ -1,6 +1,7 @@
 package com.example.demo.utils;
 
 import java.time.Instant;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.Authentication;
@@ -39,4 +40,9 @@ public class TokenService {
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claimsSet)).getTokenValue();
     }
+
+    public Map<String, Object> decodeJwt(String token) {
+        return jwtDecoder.decode(token).getClaims();
+    }
+
 }
