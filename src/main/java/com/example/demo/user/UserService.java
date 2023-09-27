@@ -1,8 +1,8 @@
 package com.example.demo.user;
 
 import com.example.demo.role.Role;
+import com.example.demo.role.RoleRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.UUID;
-import java.util.HashSet;
 import java.util.Optional;
 
 import java.util.List;
@@ -25,14 +24,17 @@ import java.util.stream.Collectors;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final ObjectMapper objectMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserService(UserRepository userRepository, RoleRepository roleRepository,
+            ObjectMapper objectMapper, PasswordEncoder passwordEncoder) {
 
-    public UserService(UserRepository userRepository, ObjectMapper objectMapper) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
         this.objectMapper = objectMapper;
+        this.passwordEncoder = passwordEncoder;
 
     }
 
@@ -45,8 +47,6 @@ public class UserService implements UserDetailsService {
             node.remove("credentialsNonExpired");
             node.remove("accountNonExpired");
             node.remove("accountNonLocked");
-            // node.remove("usernameDB");
-            // node.remove("passwordDB");
             return node;
         }).collect(Collectors.toList());
     }
@@ -64,8 +64,6 @@ public class UserService implements UserDetailsService {
         node.remove("credentialsNonExpired");
         node.remove("accountNonExpired");
         node.remove("accountNonLocked");
-        // node.remove("usernameDB");
-        // node.remove("passwordDB");
 
         return node;
     }
@@ -78,7 +76,12 @@ public class UserService implements UserDetailsService {
             throw new IllegalStateException("Username already taken");
         }
 
+        Role userRole = roleRepository.findByAuthority("USER")
+                .orElseGet(() -> roleRepository.save(new Role("USER")));
+
+        user.setId(UUID.randomUUID().toString());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setAuthorities(Set.of(userRole));
 
         userRepository.save(user);
     }
@@ -125,13 +128,8 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        if (!username.equals(username))
-            throw new UsernameNotFoundException(username, null);
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
 
-        Set<Role> roles = new HashSet<>();
-        roles.add(new Role(UUID.randomUUID().toString(), "USER"));
-
-        return new User(UUID.randomUUID().toString(), "johndaly", "johndaly@emial.com",
-                passwordEncoder.encode("password"), roles);
     }
 }
