@@ -17,12 +17,10 @@ import org.springframework.stereotype.Service;
 import com.example.demo.role.RoleRepository;
 import com.example.demo.user.UserRepository;
 import com.example.demo.utils.TokenService;
-// import com.example.demo.data.LoginResponseDTO;
+import com.example.demo.data.LoginResponseDTO;
+import com.example.demo.data.UserResponseDTO;
 import com.example.demo.role.Role;
 import com.example.demo.user.User;
-
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -37,21 +35,19 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
-    private final ObjectMapper objectMapper;
 
     public AuthenticationService(
             UserRepository userRepository, RoleRepository roleRepository,
             PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager,
-            TokenService tokenService, ObjectMapper objectMapper) {
+            TokenService tokenService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.tokenService = tokenService;
-        this.objectMapper = objectMapper;
     }
 
-    public ObjectNode loginUser(String username, String password, HttpServletResponse response) {
+    public LoginResponseDTO loginUser(String username, String password, HttpServletResponse response) {
         try {
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password));
@@ -67,14 +63,11 @@ public class AuthenticationService {
             User user = userRepository.findByUsername(username).orElseThrow(
                     () -> new UsernameNotFoundException("User not found"));
 
-            ObjectNode userNode = objectMapper.convertValue(user, ObjectNode.class);
-            userNode.remove("password");
+            UserResponseDTO userResponseDTO = UserResponseDTO.mapToDTO(user);
 
-            ObjectNode responseNode = objectMapper.createObjectNode();
-            responseNode.set("user", userNode);
-            responseNode.put("jwt", token);
+            LoginResponseDTO loginResponseDTO = new LoginResponseDTO(userResponseDTO, token);
 
-            return responseNode;
+            return loginResponseDTO;
 
         } catch (AuthenticationException error) {
             throw new BadCredentialsException("Invalid username/password supplied");
@@ -92,7 +85,7 @@ public class AuthenticationService {
         response.addCookie(jwtCookie);
     }
 
-    public ObjectNode registerUser(String username, String email, String password) {
+    public UserResponseDTO registerUser(String username, String email, String password) {
         Optional<User> userOptional = userRepository.findByUsername(username);
 
         if (userOptional.isPresent()) {
@@ -111,10 +104,9 @@ public class AuthenticationService {
 
         userRepository.save(newUser);
 
-        ObjectNode userNode = objectMapper.convertValue(newUser, ObjectNode.class);
-        userNode.remove("password");
+        UserResponseDTO userResponseDTO = UserResponseDTO.mapToDTO(newUser);
 
-        return userNode;
+        return userResponseDTO;
     }
 
     public User updateUser(String userId, String newUsername, String newEmail, String newPassword) {

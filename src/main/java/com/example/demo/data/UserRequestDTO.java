@@ -1,14 +1,14 @@
 package com.example.demo.data;
 
-public class UserDTO {
+public class UserRequestDTO {
     private String username;
     private String email;
     private String password;
 
-    public UserDTO() {
+    public UserRequestDTO() {
     }
 
-    public UserDTO(String username, String email, String password) {
+    public UserRequestDTO(String username, String email, String password) {
         this.username = username;
         this.email = email;
         this.password = password;

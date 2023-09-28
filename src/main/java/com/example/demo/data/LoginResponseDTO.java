@@ -1,24 +1,22 @@
 package com.example.demo.data;
 
-import com.example.demo.user.User;
-
 public class LoginResponseDTO {
-    private User user;
+    private UserResponseDTO user;
     private String jwt;
 
     public LoginResponseDTO() {
     }
 
-    public LoginResponseDTO(User user, String jwt) {
+    public LoginResponseDTO(UserResponseDTO user, String jwt) {
         this.user = user;
         this.jwt = jwt;
     }
 
-    public User getUser() {
+    public UserResponseDTO getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserResponseDTO user) {
         this.user = user;
     }
 
@@ -29,4 +27,5 @@ public class LoginResponseDTO {
     public void setJwt(String jwt) {
         this.jwt = jwt;
     }
+
 }
