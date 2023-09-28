@@ -4,20 +4,26 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.models.OpenAPI;
 
-// import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-// import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 
 @Configuration
 @OpenAPIDefinition(info = @Info(title = "Primal Formulas API", version = "v1"))
-// @SecurityScheme(name = "bearerauth", type = SecuritySchemeType.HTTP,
-// bearerFormat = "JWT", scheme = "bearer")
 public class OpenAPIConfig {
+
+    private SecurityScheme createAPIKeyScheme() {
+        return new SecurityScheme().type(SecurityScheme.Type.HTTP).bearerFormat("JWT").scheme("bearer");
+    }
 
     @Bean
     OpenAPI customOpenAPI() {
-        return new OpenAPI();
+        return new OpenAPI()
+                .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
+                .components(new Components().addSecuritySchemes("Bearer Authentication",
+                        createAPIKeyScheme()));
     }
 }
