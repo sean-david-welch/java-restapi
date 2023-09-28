@@ -2,6 +2,8 @@ package com.example.demo.utils;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.List;
+
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.Authentication;
@@ -27,15 +29,15 @@ public class TokenService {
 
         Instant now = Instant.now();
 
-        String scope = auth.getAuthorities().stream()
+        List<String> roles = auth.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(" "));
+                .collect(Collectors.toList());
 
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
                 .subject(auth.getName())
-                .claim("roles", scope)
+                .claim("roles", roles)
                 .build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claimsSet)).getTokenValue();

@@ -33,9 +33,13 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public LoginResponseDTO loginUser(@RequestBody LoginRequestDTO body, HttpServletResponse response) {
+    public LoginResponseDTO Login(@RequestBody LoginRequestDTO body, HttpServletResponse response) {
         return authenticationService.loginUser(body.getUsername(), body.getPassword(), response);
+    }
 
+    @PostMapping("/logout")
+    public void Logout(HttpServletResponse response) {
+        authenticationService.logout(response);
     }
 
     @PutMapping("/update-user/{userId}")

@@ -55,7 +55,7 @@ public class AuthenticationService {
 
             String token = tokenService.generateJwt(auth);
 
-            Cookie jwtCookie = new Cookie("jwt", token);
+            Cookie jwtCookie = new Cookie("access_token", token);
             jwtCookie.setHttpOnly(true);
             jwtCookie.setSecure(false);
             jwtCookie.setPath("/");
@@ -68,6 +68,17 @@ public class AuthenticationService {
             throw new BadCredentialsException("Invalid username/password supplied");
 
         }
+    }
+
+    public void logout(HttpServletResponse response) {
+        Cookie jwtCookie = new Cookie("access_token", null);
+
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setSecure(false);
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge(0);
+
+        response.addCookie(jwtCookie);
     }
 
     public User registerUser(String username, String email, String password) {
