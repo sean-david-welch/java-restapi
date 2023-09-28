@@ -8,10 +8,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.data.LoginResponseDTO;
+// import com.example.demo.data.LoginResponseDTO;
 import com.example.demo.data.LoginRequestDTO;
 import com.example.demo.data.UserDTO;
 import com.example.demo.user.User;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -28,12 +29,12 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public User RegisterUser(@Valid @RequestBody UserDTO userDTO) {
+    public ObjectNode RegisterUser(@Valid @RequestBody UserDTO userDTO) {
         return authenticationService.registerUser(userDTO.getUsername(), userDTO.getEmail(), userDTO.getPassword());
     }
 
     @PostMapping("/login")
-    public LoginResponseDTO Login(@RequestBody LoginRequestDTO body, HttpServletResponse response) {
+    public ObjectNode Login(@RequestBody LoginRequestDTO body, HttpServletResponse response) {
         return authenticationService.loginUser(body.getUsername(), body.getPassword(), response);
     }
 
