@@ -3,10 +3,12 @@ package com.example.demo.customer;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.data.CustomerDTO;
 import com.example.demo.user.User;
 import com.example.demo.user.UserRepository;
 
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,32 +24,43 @@ public class CustomerService {
 
     }
 
-    public List<Customer> GetCustomers() {
-        return customerRepository.findAll();
+    public List<CustomerDTO> GetCustomers() {
+        List<Customer> customers = customerRepository.findAll();
+
+        return customers.stream()
+                .map(CustomerDTO::new)
+                .collect(Collectors.toList());
     }
 
-    public Optional<Customer> GetCustomerDetail(String customerId) {
-        return customerRepository.findCustomerById(customerId);
+    public Optional<CustomerDTO> GetCustomerDetail(String customerId) {
+        Optional<Customer> customer = customerRepository.findCustomerById(customerId);
+
+        return customer.map(CustomerDTO::new);
     }
 
     @Transactional
-    public void CreateCustomer(Customer customer) {
-        Optional<Customer> customerOptional = customerRepository.findCustomerById(customer.getId());
-        Optional<User> userOptional = userRepository.findById(customer.getUser().getId());
+    public CustomerDTO CreateCustomer(CustomerDTO customerDTO) {
+        Optional<Customer> customerOptional = customerRepository.findCustomerById(customerDTO.getId());
+        Optional<User> userOptional = userRepository.findById(customerDTO.getUserId());
 
         if (customerOptional.isPresent() || !userOptional.isPresent()) {
             throw new IllegalStateException("Csutomer already exits or user does not exist");
         }
 
+        Customer customer = new Customer();
         customer.setId(UUID.randomUUID().toString());
+        customer.setName(customerDTO.getName());
+        customer.setUser(userOptional.get());
 
-        customerRepository.save(customer);
+        Customer savedCustomer = customerRepository.save(customer);
+
+        return new CustomerDTO(savedCustomer);
     }
 
     @Transactional
-    public void UpdateCustomer(String customerId, Customer customer) {
-        Optional<Customer> customerOptional = customerRepository.findCustomerById(customer.getId());
-        Optional<User> userOptional = userRepository.findById(customer.getUser().getId());
+    public CustomerDTO UpdateCustomer(String customerId, CustomerDTO customerDTO) {
+        Optional<Customer> customerOptional = customerRepository.findCustomerById(customerDTO.getId());
+        Optional<User> userOptional = userRepository.findById(customerDTO.getUserId());
 
         if (customerOptional.isPresent() || !userOptional.isPresent()) {
             throw new IllegalStateException("Csutomer already exits or user does not exist");
@@ -55,9 +68,12 @@ public class CustomerService {
 
         Customer existingCustomer = customerOptional.get();
 
-        existingCustomer.setName(customer.getName());
+        existingCustomer.setName(customerDTO.getName());
+        existingCustomer.setUser(userOptional.get());
 
-        customerRepository.save(customer);
+        Customer updatedCustomer = customerRepository.save(existingCustomer);
+
+        return new CustomerDTO(updatedCustomer);
     }
 
     public void RemoveCustomer(String customerId) {

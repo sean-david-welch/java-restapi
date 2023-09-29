@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.data.CustomerDTO;
+
 @RestController
 @RequestMapping(path = "/api/customers")
 public class CustomerController {
@@ -23,23 +25,23 @@ public class CustomerController {
     }
 
     @GetMapping
-    public List<Customer> GetCustomers() {
+    public List<CustomerDTO> GetCustomers() {
         return customerService.GetCustomers();
     }
 
     @GetMapping(path = "{customerId}")
-    public Optional<Customer> GetCustomerById(@PathVariable("customerId") String customerId) {
+    public Optional<CustomerDTO> GetCustomerById(@PathVariable("customerId") String customerId) {
         return customerService.GetCustomerDetail(customerId);
     }
 
     @PostMapping
-    public void PostCustomer(@RequestBody Customer customer) {
-        customerService.CreateCustomer(customer);
+    public CustomerDTO PostCustomer(@RequestBody CustomerDTO customer) {
+        return customerService.CreateCustomer(customer);
     }
 
     @PutMapping(path = "{customerId}")
-    public void PutCustomer(@PathVariable("customerId") String customerId, Customer customer) {
-        customerService.UpdateCustomer(customerId, customer);
+    public CustomerDTO PutCustomer(@PathVariable("customerId") String customerId, CustomerDTO customer) {
+        return customerService.UpdateCustomer(customerId, customer);
     }
 
     @DeleteMapping(path = "{customerId}")
