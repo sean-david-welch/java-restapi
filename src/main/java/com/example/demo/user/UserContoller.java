@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -33,7 +34,10 @@ public class UserContoller {
     }
 
     @DeleteMapping(path = "{userId}")
-    public void DeleteUser(@PathVariable String userId) {
+    public ResponseEntity<String> DeleteUser(@PathVariable String userId) {
         userService.removeUser(userId);
+
+        return ResponseEntity.ok("User with ID " + userId + " has been deleted.");
+
     }
 }
