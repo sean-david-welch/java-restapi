@@ -34,7 +34,7 @@ public class Order {
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private Customer customer;
 
-    @Column(name = "status", columnDefinition = "order_status")
+    @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
 
