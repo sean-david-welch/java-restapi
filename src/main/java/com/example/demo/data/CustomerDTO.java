@@ -8,6 +8,10 @@ public class CustomerDTO {
     private String userId;
     private String name;
 
+    public CustomerDTO() {
+
+    }
+
     public CustomerDTO(Customer customer) {
         this.id = customer.getId();
         this.userId = (customer.getUser() != null) ? customer.getUser().getId() : null;

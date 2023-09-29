@@ -1,8 +1,10 @@
 package com.example.demo.data;
 
+import com.example.demo.address.Address;
+
 public class AddressDTO {
     private String id;
-    private String customer_id;
+    private String customerId;
     private String line1;
     private String line2;
     private String street;
@@ -14,17 +16,16 @@ public class AddressDTO {
     public AddressDTO() {
     }
 
-    public AddressDTO(String id, String customer_id, String line1, String line2, String street, String city,
-            String state, String country, String postalCode) {
-        this.id = id;
-        this.customer_id = customer_id;
-        this.line1 = line1;
-        this.line2 = line2;
-        this.street = street;
-        this.city = city;
-        this.state = state;
-        this.country = country;
-        this.postalCode = postalCode;
+    public AddressDTO(Address address) {
+        this.id = address.getId();
+        this.customerId = (address.getCustomer() != null) ? address.getCustomer().getId() : null;
+        this.line1 = address.getLine1();
+        this.line2 = address.getLine2();
+        this.street = address.getStreet();
+        this.city = address.getCity();
+        this.state = address.getState();
+        this.country = address.getCountry();
+        this.postalCode = address.getPostalCode();
     }
 
     public String getId() {
@@ -35,12 +36,12 @@ public class AddressDTO {
         this.id = id;
     }
 
-    public String getCustomer_id() {
-        return customer_id;
+    public String getCustomerId() {
+        return customerId;
     }
 
-    public void setCustomer_id(String customer_id) {
-        this.customer_id = customer_id;
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 
     public String getLine1() {

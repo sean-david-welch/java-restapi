@@ -1,18 +1,17 @@
 package com.example.demo.order;
 
-// import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.customer.Customer;
 import com.example.demo.customer.CustomerRepository;
+import com.example.demo.data.OrderDTO;
 
 import jakarta.transaction.Transactional;
 
 import java.util.UUID;
 import java.util.List;
 import java.util.Optional;
-
-import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -24,50 +23,59 @@ public class OrderService {
         this.customerRepository = customerRepository;
     }
 
-    public List<Order> GetOrders() {
-        return orderRepository.findAll();
+    public List<OrderDTO> GetOrders() {
+        List<Order> orders = orderRepository.findAll();
+
+        return orders.stream()
+                .map(OrderDTO::new)
+                .collect(Collectors.toList());
     }
 
-    public Optional<Order> GetOrderDetail(String orderId) {
-        return orderRepository.findOrderById(orderId);
+    public Optional<OrderDTO> GetOrderDetail(String orderId) {
+        Optional<Order> order = orderRepository.findOrderById(orderId);
+
+        return order.map(OrderDTO::new);
     }
 
     @Transactional
-    public void CreateOrder(OrderDTO orderDTO) {
-        // Check if customer exists
+    public OrderDTO CreateOrder(OrderDTO orderDTO) {
+        Optional<Order> orderOptional = orderRepository.findOrderById(orderDTO.getId());
         Optional<Customer> customerOptional = customerRepository.findById(orderDTO.getCustomerId());
-        if (!customerOptional.isPresent()) {
-            throw new IllegalStateException("The customer does not exist");
-        }
-        Customer customer = customerOptional.get();
-
-        // Create new Order
-        Order order = new Order(
-                UUID.randomUUID().toString(),
-                LocalDateTime.now(),
-                customer,
-                orderDTO.getStatus());
-
-        // Save the new Order
-        orderRepository.save(order);
-    }
-
-    @Transactional
-    public void UpdateOrder(Order order, String orderId) {
-        Optional<Order> orderOptional = orderRepository.findOrderById(order.getId());
-        Optional<Customer> customerOptional = customerRepository.findById(order.getCustomer().getId());
 
         if (orderOptional.isPresent() || !customerOptional.isPresent()) {
-            throw new IllegalStateException("This order already exists or the customer does not exist");
+            throw new IllegalStateException("The customer does not exist or this order already exists");
+        }
+
+        Order order = new Order();
+
+        order.setId(UUID.randomUUID().toString());
+        order.setOrderDate(orderDTO.getOrderDate());
+        order.setStatus(Order.Status.valueOf(orderDTO.getStatus()));
+        order.setCustomer(customerOptional.get());
+
+        Order savedOrder = orderRepository.save(order);
+
+        return new OrderDTO(savedOrder);
+    }
+
+    @Transactional
+    public OrderDTO UpdateOrder(OrderDTO orderDTO, String orderId) {
+        Optional<Order> orderOptional = orderRepository.findOrderById(orderId);
+        Optional<Customer> customerOptional = customerRepository.findById(orderDTO.getCustomerId());
+
+        if (!orderOptional.isPresent() || !customerOptional.isPresent()) {
+            throw new IllegalStateException("This order doesn't exist or the customer doesn't exist");
         }
 
         Order existingOrder = orderOptional.get();
 
-        existingOrder.setOrderDate(order.getOrderDate());
-        existingOrder.setCustomer(order.getCustomer());
-        existingOrder.setStatus(order.getStatus());
+        existingOrder.setOrderDate(orderDTO.getOrderDate());
+        existingOrder.setCustomer(customerOptional.get());
+        existingOrder.setStatus(Order.Status.valueOf(orderDTO.getStatus()));
 
-        orderRepository.save(existingOrder);
+        Order updatedOrder = orderRepository.save(existingOrder);
+
+        return new OrderDTO(updatedOrder);
     }
 
     public void RemoveOrder(String orderId) {
