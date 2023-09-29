@@ -52,23 +52,19 @@ public class OrderDetails {
         this.id = id;
     }
 
-    public String getProductID() {
-        return this.product != null ? this.product.getId() : null;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setProductID(Product product) {
+    public void setProduct(Product product) {
         this.product = product;
     }
 
-    public String getProduct_name() {
-        return this.product != null ? this.product.getName() : null;
-    }
-
-    public Order getOrderID() {
+    public Order getOrder() {
         return order;
     }
 
-    public void setOrderID(Order order) {
+    public void setOrder(Order order) {
         this.order = order;
     }
 

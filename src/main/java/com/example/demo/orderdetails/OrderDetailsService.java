@@ -2,7 +2,7 @@ package com.example.demo.orderdetails;
 
 import org.springframework.stereotype.Service;
 
-// import com.example.demo.order.OrderService;
+import com.example.demo.data.OrderDetailsDTO;
 import com.example.demo.order.Order;
 import com.example.demo.order.OrderRepository;
 import com.example.demo.product.Product;
@@ -11,6 +11,7 @@ import com.example.demo.product.ProductRepository;
 import jakarta.transaction.Transactional;
 
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,48 +31,62 @@ public class OrderDetailsService {
 
     }
 
-    public List<OrderDetails> GetOrderDetails() {
-        return orderDetailsRepository.findAll();
+    public List<OrderDetailsDTO> GetOrderDetails() {
+        List<OrderDetails> orderDetails = orderDetailsRepository.findAll();
+
+        return orderDetails.stream()
+                .map(OrderDetailsDTO::new)
+                .collect(Collectors.toList());
     }
 
-    public Optional<OrderDetails> GetOrderDetailById(String orderDetailId) {
-        return orderDetailsRepository.findOrderDetailsById(orderDetailId);
+    public Optional<OrderDetailsDTO> GetOrderDetailById(String orderDetailId) {
+        Optional<OrderDetails> orderDetail = orderDetailsRepository.findOrderDetailsById(orderDetailId);
+
+        return orderDetail.map(OrderDetailsDTO::new);
     }
 
     @Transactional
-    public void CreateOrderDetails(OrderDetails orderDetails) {
-        Optional<OrderDetails> orderDetailsOptional = orderDetailsRepository.findOrderDetailsById(orderDetails.getId());
-        Optional<Order> orderOptional = orderRepository.findById(orderDetails.getOrderID().getId());
+    public OrderDetailsDTO CreateOrderDetails(OrderDetailsDTO orderDetailsDTO) {
+        Optional<OrderDetails> orderDetailsOptional = orderDetailsRepository
+                .findOrderDetailsById(orderDetailsDTO.getId());
+        Optional<Order> orderOptional = orderRepository.findById(orderDetailsDTO.getOrderId());
+        Optional<Product> productOptional = productRepository.findById(orderDetailsDTO.getProductId());
 
-        if (orderDetailsOptional.isPresent() || !orderOptional.isPresent()) {
-            throw new IllegalStateException("The order detail already exists or the order itself is non existant");
+        if (orderDetailsOptional.isPresent() || !orderOptional.isPresent() || !productOptional.isPresent()) {
+            throw new IllegalStateException("OrderDetails or Order or Product not found");
         }
 
+        OrderDetails orderDetails = new OrderDetails();
         orderDetails.setId(UUID.randomUUID().toString());
+        orderDetails.setOrder(orderOptional.get());
+        orderDetails.setProduct(productOptional.get());
+        orderDetails.setQuantity(orderDetailsDTO.getQuantity());
+        orderDetails.setUnitPrice(orderDetailsDTO.getUnitPrice());
 
-        orderDetailsRepository.save(orderDetails);
+        OrderDetails savedOrderDetails = orderDetailsRepository.save(orderDetails);
+
+        return new OrderDetailsDTO(savedOrderDetails);
     }
 
     @Transactional
-    public void UpdateOrderDetails(OrderDetails orderDetails, String Id) {
-        Optional<OrderDetails> orderDetailsOptional = orderDetailsRepository.findOrderDetailsById(orderDetails.getId());
-        Optional<Order> orderOptional = orderRepository.findOrderById(orderDetails.getOrderID().getId());
-        Optional<Product> producOptional = productRepository.findProductById(orderDetails.getProductID());
+    public OrderDetailsDTO UpdateOrderDetails(String id, OrderDetailsDTO orderDetailsDTO) {
+        Optional<OrderDetails> orderDetailsOptional = orderDetailsRepository.findOrderDetailsById(id);
+        Optional<Order> orderOptional = orderRepository.findById(orderDetailsDTO.getOrderId());
+        Optional<Product> productOptional = productRepository.findById(orderDetailsDTO.getProductId());
 
-        if (orderDetailsOptional.isPresent() || !orderOptional.isPresent()) {
-            throw new IllegalStateException("The order detail already exists or the order itself is non existant");
+        if (!orderDetailsOptional.isPresent() || !orderOptional.isPresent() || !productOptional.isPresent()) {
+            throw new IllegalStateException("OrderDetails or Order or Product not found");
         }
 
-        OrderDetails existingDetails = orderDetailsOptional.get();
-        Product product = producOptional.get();
+        OrderDetails existingOrderDetails = orderDetailsOptional.get();
+        existingOrderDetails.setOrder(orderOptional.get());
+        existingOrderDetails.setProduct(productOptional.get());
+        existingOrderDetails.setQuantity(orderDetailsDTO.getQuantity());
+        existingOrderDetails.setUnitPrice(orderDetailsDTO.getUnitPrice());
 
-        existingDetails.setOrderID(orderDetails.getOrderID());
-        existingDetails.setProductID(product);
-        existingDetails.setOrderID(orderDetails.getOrderID());
-        existingDetails.setQuantity(orderDetails.getQuantity());
-        existingDetails.setUnitPrice(orderDetails.getUnitPrice());
+        OrderDetails updatedOrderDetails = orderDetailsRepository.save(existingOrderDetails);
 
-        orderDetailsRepository.save(existingDetails);
+        return new OrderDetailsDTO(updatedOrderDetails);
     }
 
     public void RemoveOrderDetails(String id) {
