@@ -1,6 +1,7 @@
 package com.example.demo.user;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.example.demo.data.UserResponseDTO;
 
 @RestController
 @RequestMapping(path = "/api/users")
@@ -22,12 +23,12 @@ public class UserContoller {
     }
 
     @GetMapping
-    public List<ObjectNode> GetAllUsers() {
+    public List<UserResponseDTO> GetAllUsers() {
         return userService.getUsers();
     }
 
     @GetMapping(path = "{userId}")
-    public ObjectNode GetUserById(@PathVariable("userId") String userId) {
+    public Optional<UserResponseDTO> GetUserById(@PathVariable("userId") String userId) {
         return userService.getUserById(userId);
     }
 

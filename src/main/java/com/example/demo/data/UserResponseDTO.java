@@ -1,22 +1,27 @@
 package com.example.demo.data;
 
-import java.util.Set;
-
-import com.example.demo.role.Role;
 import com.example.demo.user.User;
+import com.example.demo.role.Role;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class UserResponseDTO {
     private String id;
     private String username;
     private String email;
+    private Set<Role> roles;
 
     public UserResponseDTO() {
     }
 
-    public UserResponseDTO(String id, String username, String email, Set<Role> authorities) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
+    public UserResponseDTO(User user) {
+        this.id = user.getId();
+        this.username = user.getUsername();
+        this.email = user.getEmail();
+        this.roles = user.getAuthorities().stream()
+                .filter(Role.class::isInstance)
+                .map(Role.class::cast)
+                .collect(Collectors.toSet());
     }
 
     public String getId() {
@@ -43,13 +48,12 @@ public class UserResponseDTO {
         this.email = email;
     }
 
-    public static UserResponseDTO mapToDTO(User user) {
-        UserResponseDTO userDTO = new UserResponseDTO();
-        userDTO.setId(user.getId());
-        userDTO.setUsername(user.getUsername());
-        userDTO.setEmail(user.getEmail());
+    public Set<Role> getRoles() {
+        return roles;
+    }
 
-        return userDTO;
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
 }

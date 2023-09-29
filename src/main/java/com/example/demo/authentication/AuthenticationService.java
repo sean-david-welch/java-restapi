@@ -63,8 +63,7 @@ public class AuthenticationService {
             User user = userRepository.findByUsername(username).orElseThrow(
                     () -> new UsernameNotFoundException("User not found"));
 
-            UserResponseDTO userResponseDTO = UserResponseDTO.mapToDTO(user);
-
+            UserResponseDTO userResponseDTO = new UserResponseDTO(user);
             LoginResponseDTO loginResponseDTO = new LoginResponseDTO(userResponseDTO, token);
 
             return loginResponseDTO;
@@ -104,12 +103,10 @@ public class AuthenticationService {
 
         userRepository.save(newUser);
 
-        UserResponseDTO userResponseDTO = UserResponseDTO.mapToDTO(newUser);
-
-        return userResponseDTO;
+        return new UserResponseDTO(newUser);
     }
 
-    public User updateUser(String userId, String newUsername, String newEmail, String newPassword) {
+    public UserResponseDTO updateUser(String userId, String newUsername, String newEmail, String newPassword) {
         Optional<User> userOptional = userRepository.findById(userId);
 
         if (userOptional.isEmpty()) {
@@ -134,10 +131,12 @@ public class AuthenticationService {
             existingUser.setPassword(passwordEncoder.encode(newPassword));
         }
 
-        return userRepository.save(existingUser);
+        userRepository.save(existingUser);
+
+        return new UserResponseDTO(existingUser);
     }
 
-    public User updateUserRoles(String userId, Set<String> newRoles) {
+    public UserResponseDTO updateUserRoles(String userId, Set<String> newRoles) {
         Optional<User> userOptional = userRepository.findById(userId);
 
         if (userOptional.isEmpty()) {
@@ -152,7 +151,9 @@ public class AuthenticationService {
 
         existingUser.setAuthorities(roles);
 
-        return userRepository.save(existingUser);
+        userRepository.save(existingUser);
+
+        return new UserResponseDTO(existingUser);
     }
 
 }

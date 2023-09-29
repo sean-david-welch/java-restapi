@@ -1,14 +1,11 @@
 package com.example.demo.user;
 
-import com.example.demo.role.RoleRepository;
+import com.example.demo.data.UserResponseDTO;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.Optional;
 
@@ -19,43 +16,23 @@ import java.util.stream.Collectors;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final ObjectMapper objectMapper;
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository,
-            ObjectMapper objectMapper) {
-
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.objectMapper = objectMapper;
     }
 
-    public List<ObjectNode> getUsers() {
+    public List<UserResponseDTO> getUsers() {
         List<User> users = userRepository.findAll();
 
-        return users.stream().map(user -> {
-            ObjectNode node = objectMapper.convertValue(user, ObjectNode.class);
-            node.remove("password");
-            node.remove("credentialsNonExpired");
-            node.remove("accountNonExpired");
-            node.remove("accountNonLocked");
-            return node;
-        }).collect(Collectors.toList());
+        return users.stream()
+                .map(UserResponseDTO::new)
+                .collect(Collectors.toList());
     }
 
-    public ObjectNode getUserById(String userId) {
-        Optional<User> optionalUser = userRepository.findById(userId);
+    public Optional<UserResponseDTO> getUserById(String userId) {
+        Optional<User> user = userRepository.findById(userId);
 
-        if (optionalUser.isEmpty()) {
-            throw new IllegalStateException("User not found");
-        }
-
-        User user = optionalUser.get();
-        ObjectNode node = objectMapper.convertValue(user, ObjectNode.class);
-        node.remove("password");
-        node.remove("credentialsNonExpired");
-        node.remove("accountNonExpired");
-        node.remove("accountNonLocked");
-
-        return node;
+        return user.map(UserResponseDTO::new);
     }
 
     public void removeUser(String userId) {

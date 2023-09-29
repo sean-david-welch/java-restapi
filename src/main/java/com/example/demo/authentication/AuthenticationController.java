@@ -11,7 +11,6 @@ import com.example.demo.data.LoginRequestDTO;
 import com.example.demo.data.LoginResponseDTO;
 import com.example.demo.data.UserRequestDTO;
 import com.example.demo.data.UserResponseDTO;
-import com.example.demo.user.User;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -44,13 +43,13 @@ public class AuthenticationController {
     }
 
     @PutMapping("/update-user/{userId}")
-    public User updateUser(@PathVariable String userId, @Valid @RequestBody UserRequestDTO UserRequestDTO) {
+    public UserResponseDTO updateUser(@PathVariable String userId, @Valid @RequestBody UserRequestDTO UserRequestDTO) {
         return authenticationService.updateUser(userId, UserRequestDTO.getUsername(), UserRequestDTO.getEmail(),
                 UserRequestDTO.getPassword());
     }
 
     @PutMapping("/update-user-roles/{userId}")
-    public User updateUserRoles(@PathVariable String userId, @RequestBody Set<String> newRoles) {
+    public UserResponseDTO updateUserRoles(@PathVariable String userId, @RequestBody Set<String> newRoles) {
         return authenticationService.updateUserRoles(userId, newRoles);
     }
 
