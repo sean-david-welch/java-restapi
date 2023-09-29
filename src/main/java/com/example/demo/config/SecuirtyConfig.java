@@ -25,6 +25,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.example.demo.config.SecurityExceptionHandlers.CustomAccessDeniedHandler;
+import com.example.demo.config.SecurityExceptionHandlers.CustomAuthenticationEntryPoint;
 import com.example.demo.utils.RSAKeyProperties;
 
 import com.nimbusds.jose.jwk.JWK;
@@ -74,6 +76,10 @@ public class SecuirtyConfig {
                                 .requestMatchers(HttpMethod.PUT, "/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")
                                 .anyRequest().authenticated());
+
+        http.exceptionHandling(exceptionHandling -> exceptionHandling
+                .accessDeniedHandler(new CustomAccessDeniedHandler())
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint()));
 
         http.oauth2ResourceServer(
                 oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
